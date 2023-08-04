@@ -4,11 +4,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None):
-        if not email:
-            raise ValueError("사용자 이메일은 필수입력 사항입니다.")
-
         user = self.model(email=self.normalize_email(email))
-
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -22,7 +18,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     email = models.EmailField("이메일", max_length=255, unique=True)
-    password = models.CharField("비밀번호", max_length=20)
+    password = models.CharField("비밀번호", max_length=255)
     profile_image = models.ImageField(
         "프로필이미지", upload_to="profile_images/", blank=True, null=True
     )
@@ -34,6 +30,7 @@ class User(AbstractBaseUser):
     objects = UserManager()
 
     USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
 
     def __str__(self):
         return self.email
