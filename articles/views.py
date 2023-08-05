@@ -23,7 +23,7 @@ class ArticleView(APIView):
             {
                 "data": serializer.data,
                 "status": status.HTTP_201_CREATED,
-                "message": "게시글 등록 완료!",
+                "message": "게시글 등록 성공!",
             },
             status=status.HTTP_201_CREATED,
         )
