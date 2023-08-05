@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from rest_framework import serializers
+from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import User
-from rest_framework.generics import get_object_or_404
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -26,3 +25,34 @@ class SignupSerializer(serializers.ModelSerializer):
             user.set_password(password)
         user.save()
         return user
+
+
+class SigninSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True, write_only=True)
+    password = serializers.CharField(required=True, write_only=True)
+
+    class Meta:
+        model = User
+        fields = ("email", "password")
+
+    def validate(self, data):
+        email = data.get("email", None)
+        password = data.get("password", None)
+
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+            if not user.check_password(password):
+                raise serializers.ValidationError("비밀번호를 다시 확인해 주십시오.")
+        else:
+            raise serializers.ValidationError("존재하지 않는 이메일입니다.")
+
+        token = RefreshToken.for_user(user)
+        refresh = str(token)
+        access = str(token.access_token)
+
+        data = {
+            "refresh": refresh,
+            "access": access,
+        }
+
+        return data
