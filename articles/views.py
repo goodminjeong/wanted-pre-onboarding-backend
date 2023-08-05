@@ -69,3 +69,23 @@ class ArticleView(APIView):
                 },
                 status=status.HTTP_403_FORBIDDEN,
             )
+
+    def delete(self, request, article_id):  # 게시글 삭제
+        article = get_object_or_404(Article, id=article_id)
+        if request.user == article.user:
+            article.delete()
+            return Response(
+                {
+                    "status": status.HTTP_204_NO_CONTENT,
+                    "message": "게시글 삭제 성공!",
+                },
+                status=status.HTTP_204_NO_CONTENT,
+            )
+        else:
+            return Response(
+                {
+                    "status": status.HTTP_403_FORBIDDEN,
+                    "message": "권한이 없습니다.",
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
