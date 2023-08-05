@@ -1,8 +1,10 @@
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .models import Article
 from .serializers import ArticleSerializer
 
 
@@ -24,3 +26,10 @@ class ArticleView(APIView):
             },
             status=status.HTTP_201_CREATED,
         )
+
+    def get(self, request):  # 게시글 목록 보기
+        articles = Article.objects.all()
+        pagination = PageNumberPagination()
+        paginated_articles = pagination.paginate_queryset(articles, request)
+        serializer = ArticleSerializer(paginated_articles, many=True)
+        return pagination.get_paginated_response(serializer.data)
