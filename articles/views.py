@@ -46,3 +46,26 @@ class ArticleView(APIView):
             paginated_articles = pagination.paginate_queryset(articles, request)
             serializer = ArticleSerializer(paginated_articles, many=True)
             return pagination.get_paginated_response(serializer.data)
+
+    def put(self, request, article_id):  # 게시글 수정
+        article = get_object_or_404(Article, id=article_id)
+        if request.user == article.user:
+            serializer = ArticleSerializer(article, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(
+                {
+                    "data": serializer.data,
+                    "status": status.HTTP_200_OK,
+                    "message": "게시글 수정 성공!",
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {
+                    "status": status.HTTP_403_FORBIDDEN,
+                    "message": "권한이 없습니다.",
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
