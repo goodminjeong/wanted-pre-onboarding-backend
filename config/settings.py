@@ -89,28 +89,37 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-MYSQL_DB = env("DB_NAME")
-if MYSQL_DB:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": MYSQL_DB,
-            "USER": env("DB_USER"),
-            "PASSWORD": env("DB_PASSWORD"),
-            "HOST": env("DB_HOST"),
-            "PORT": env("DB_PORT"),
-        }
-    }
-else:
+
+# Check if running in the test environment
+RUNNING_TESTS = os.environ.get("RUNNING_TESTS") == "True"
+
+if RUNNING_TESTS:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
-            "TEST": {
-                "NAME": BASE_DIR / "db.sqlite3",
-            },
         }
     }
+else:
+    MYSQL_DB = env("DB_NAME")
+    if MYSQL_DB:
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.mysql",
+                "NAME": MYSQL_DB,
+                "USER": env("DB_USER"),
+                "PASSWORD": env("DB_PASSWORD"),
+                "HOST": env("DB_HOST"),
+                "PORT": env("DB_PORT"),
+            }
+        }
+    else:
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": BASE_DIR / "db.sqlite3",
+            }
+        }
 
 
 # Password validation
