@@ -138,3 +138,33 @@ class AccompanyViewTest(APITestCase):
             HTTP_AUTHORIZATION=f"Bearer {access_token}",
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    # ------------------------게시글 삭제 테스트------------------------
+    def test_delete_article_success(self):  # 게시글 삭제 성공 테스트
+        response = self.client.delete(
+            path=reverse(
+                "articles:article-detail",
+                kwargs={"article_id": self.article.id},
+            ),
+            HTTP_AUTHORIZATION=f"Bearer {self.access_token}",
+        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Article.objects.count(), 0)
+        self.assertFalse(Article.objects.filter(id=self.article.id).exists())
+
+    def test_delete_article_failed_not_user(self):  # 게시글 삭제 실패 테스트 - 작성자 아닌 사용자
+        update_data = {"title": "updated title"}
+        user_data_not_owner = {"email": "not@user.com", "password": "12345678"}
+        User.objects.create_user(**user_data_not_owner)
+        access_token = self.client.post(
+            reverse("users:signin"), user_data_not_owner
+        ).data["data"]["access"]
+        response = self.client.delete(
+            path=reverse(
+                "articles:article-detail",
+                kwargs={"article_id": self.article.id},
+            ),
+            data=update_data,
+            HTTP_AUTHORIZATION=f"Bearer {access_token}",
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
