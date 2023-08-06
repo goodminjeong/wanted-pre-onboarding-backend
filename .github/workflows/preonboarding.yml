@@ -27,6 +27,7 @@ jobs:
         echo "DEBUG=${{ secrets.DEBUG }}" >> $GITHUB_ENV
         echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
         echo "SIGNING_KEY=${{ secrets.SIGNING_KEY }}" >> $GITHUB_ENV
+        echo "RUNNING_TESTS=True" >> $GITHUB_ENV
 
     - name: Install Dependencies
       run: |
