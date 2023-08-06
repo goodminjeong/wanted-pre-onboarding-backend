@@ -90,3 +90,10 @@ class AccompanyViewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(Article.objects.count(), 1)
         self.assertEqual(response.data["content"][0], "이 필드는 필수 항목입니다.")
+
+    # ------------------------게시글 목록 조회 테스트------------------------
+    def test_get_articles_list(self):
+        [Article.objects.create(**self.article_data, user=self.user) for _ in range(4)]
+        response = self.client.get(path=reverse("articles:article"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 5)
