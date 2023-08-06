@@ -107,3 +107,34 @@ class AccompanyViewTest(APITestCase):
             )
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    # ------------------------게시글 수정 테스트------------------------
+    def test_update_article_success(self):  # 게시글 수정 성공 테스트
+        update_data = {"title": "updated title"}
+        response = self.client.put(
+            path=reverse(
+                "articles:article-detail",
+                kwargs={"article_id": self.article.id},
+            ),
+            data=update_data,
+            HTTP_AUTHORIZATION=f"Bearer {self.access_token}",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["data"]["title"], "updated title")
+
+    def test_update_article_failed_not_user(self):  # 게시글 수정 실패 테스트 - 작성자 아닌 사용자
+        update_data = {"title": "updated title"}
+        user_data_not_owner = {"email": "not@user.com", "password": "12345678"}
+        User.objects.create_user(**user_data_not_owner)
+        access_token = self.client.post(
+            reverse("users:signin"), user_data_not_owner
+        ).data["data"]["access"]
+        response = self.client.put(
+            path=reverse(
+                "articles:article-detail",
+                kwargs={"article_id": self.article.id},
+            ),
+            data=update_data,
+            HTTP_AUTHORIZATION=f"Bearer {access_token}",
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
