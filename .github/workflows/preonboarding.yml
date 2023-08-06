@@ -41,3 +41,7 @@ jobs:
     - name: Run User App Tests
       run: |
         python manage.py test users
+    
+    - name: Run Articles App Tests
+      run: |
+        python manage.py test articles
