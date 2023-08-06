@@ -41,7 +41,7 @@ class ArticleView(APIView):
                 status=status.HTTP_200_OK,
             )
         else:  # 게시글 목록 조회
-            articles = Article.objects.all()
+            articles = Article.objects.all().order_by("-id")
             pagination = PageNumberPagination()
             paginated_articles = pagination.paginate_queryset(articles, request)
             serializer = ArticleSerializer(paginated_articles, many=True)
