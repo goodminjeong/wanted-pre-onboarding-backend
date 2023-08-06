@@ -97,3 +97,13 @@ class AccompanyViewTest(APITestCase):
         response = self.client.get(path=reverse("articles:article"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 5)
+
+    # ------------------------특정 게시글 조회 테스트------------------------
+    def test_get_article(self):
+        response = self.client.get(
+            path=reverse(
+                "articles:article-detail",
+                kwargs={"article_id": self.article.id},
+            )
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
