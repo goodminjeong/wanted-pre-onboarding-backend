@@ -13,7 +13,6 @@ schema_view = get_schema_view(
         title="pre-onboarding-backend API",
         default_version="1.1.1",
         description="원티드 프리온보딩-백엔드 과정 사전 과제입니다.",
-        terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="ehdro418@naver.com"),
         license=openapi.License(name="mit"),
     ),
